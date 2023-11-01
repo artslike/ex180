@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3</title>
+    <link rel="stylesheet" href="../mystyle.css">
+</head>
+<body>
+    <h1>Module 3: Using OpenShift to Automate Complex Application Builds</h1>
+    <h2>Lesson 8: Running Microservices in OpenShift</h2>
+    <h3>8.1 Understanding Decoupling</h3>
+    <h4>Understanding Microservices</h4>
+    <ul>
+        <li>A microservice is an application that consists of several independent components that are individually managed.</li>
+        <li>The different components in a microservice need to be connected to each other by providing site-specific information.</li>
+        <li>For decoupling site-specific information from generic application code, OPenShift provides several resources.</li>
+    </ul>
+    <h4>Understanding OpenShift Decoupling Resources</h4>
+    <h3>8.2 Using ConfigMaps for Decoupling</h3>
+    <h4>Understanding ConfigMaps</h4>
+    <h4>Demo: Using a ConfigMap for ConfigFiles</h4>
+    <ul>
+        <li><b>oc create deploy mynginx --image=bitnami/nginx</b></li>
+        <li><b>oc get pods</b></li>
+        <li><b>oc cp &lt;podman&gt;:/app/index.html index.html</b></li>
+        <li>Apply modifications to index.html</li>
+        <li><b>oc create configmap mycm --from-file=index.html</b></li>
+        <li><b>oc set volume deploy mynginx --add --type configmap --configmap-name mycm --mount-path=/app/</b></li>
+        <li><b>oc expose deploy mynginx --type=NodePort --port=8080</b></li>
+        <li><b>oc get svc</b></li>
+        <li><b>curl http://$(crc ip):&lt;node&gt;</b></li>
+        <li><b>oc get deploy mynginx -o yaml
+            
+        </b></li>
+    </ul>
+    <h3>8.3 Working with Secrets</h3>
+    <h4>Understanding Secrets</h4>
+    <h4>Using Secrets for Authentication</h4>
+    <h4>Using Tokens for Creating Auth Secrets</h4>
+    <h3>8.4 Providing Persistent Storage</h3>
+    <h4>Understanding OpenShift Storage</h4>
+    <h4>Using Persistent Volumes</h4>
+    <h4>Configuring Persistent Storage with Temaplates</h4>
+    <h3>8.5 Using Temaplates</h3>
+    <h3>8.6 Connecting Applications to Create Microservices</h3>
+    <h3>Lesson 8 Lab Running Microservices</h3>
+    <h2>Lesson 9: Using Source-to-Image</h2>
+    <h3>9.1 Managing Source Code in Git</h3>
+    <h4>Working with Git</h4>
+    <ul>
+        <li>Use <b>git clone</b> to create an independent copy of a Git Repository.</li>
+        <li>Create a fork to create a linked copy of a Git Repository to your own Git account, with the goal of sending the modifications back to the project owner later</li>
+        <li>Use <b>git checkout -b branchname</b> to create a branch, with the goal of sending the modiciations back to your main Git repo later.</li>
+    </ul>
+    <h4>Demo: Using Git</h4>
+    <ul>
+        <dt><li>Use <b>git clone https://github.com/sandervanvugt/simpleapp</b> to create a local copy of the remote simpleapp repo</li></dt>
+        <dt><li>Use <b>cd simpleapp; rm -rf .git</b> to remove all Git data from it. This would make it your own.</li></dt>
+        <dt><li>On the Git website, create a new repo with the name simpleapp</li></dt>
+        <dt><li>Follow instructions to generate Git metadata in /simpleapp</li></dt>
+            <dd><li><b>git init</b></li></dd>
+        <dt><li>Use the following to upload everything to your own Git repo:</li></dt>
+            <dd><li><b>git add*</b></li></dd>
+            <dd><li><b>git commit -m "my first commit"</b></li></dd>
+            <dd><li><b>git remote add orgin https://github.com/YOURACCOUNT/simpleapp</b></li></dd>
+            <dd><li><b>git push -u origin master</b></li></dd>
+    </ul>
+    <h4>Working with Git Branches</h4>
+    <ul>
+        <li><b>git clone https://github.com/YOURUSERNAME/simpleapp</b></li>
+        <li>cd simpleapp</li>
+        <li>git checkout master # checks to see if anything new</li>
+        <li>create a branch: <b>git checkout -b lab</b></li>
+        <li><b>git push -u origin lab</b></li>
+        <li>After making changes to the local files</li>
+        <li><b>git add .</b></li>
+        <li><b>git commit -m "changes"</b></li>
+        <li><b>git push origin lab</b></li>
+        <li><b>git checkout master</b></li>
+        <li><b>git merge lab</b></li>
+        <li><b>git branch -d dev-branch</b></li>
+    </ul>
+    <h3>9.2 Understanding S2I</h2>
+    <h4>Understanding S2I</h4>
+    <ul>
+        <dt><li>Source-to Image (S21) is the tool that takes application source code from a Git repository, injects this source code in a base container that is based on the source code language and framework, and produces a new container image that runs the application.</li></dt>
+        <dt><li>Using S2I makes working with OpenShift easier</li></dt>
+            <dd><li>The developer doesn't have to know anything about Dockerfile or platform specific.</li></dd>
+            <dd><li>Patching is made easy: just run the process again</li></dd>
+    </ul>
+    <h4>Understanding the Builder Image</h4>
+    <ul>
+        <li>The S2I builder image provides language specifics that are needed to build a working application based on the source code.</li>
+    </ul>
+    <h4>Understanding ImageStream</h4>
+    <ul>
+        <li>Builder images are provided by the OpenShift ImageStream.</li>
+        <li>In an ImageStream builder images are identified, with specific tags that allow users to use different versions of the builder image.</li>
+        <li>When ImageStreams change, OpenShift will automatically rebuild applications build with that ImageStream.</li>
+        <li>Use <b>oc get is -n openshift</b> for an overview of available ImageStreams</li>
+    </ul>
+    <h3>9.3 Building an Application from Source</h3>
+    <h3>9.4 Analyzing the S2I Procedure</h3>
+    <h3>9.5 Understanding ImageStream</h3>
+    <h3>9.6 Triggering Updates</h3>
+    <h4>Demo: Manually Triggering Updates</h4>
+    <ul>
+        <dt><li>Access the application built previously throught its route</li></dt>
+        <dd><li>Use <b>oc expose svc simple</b> if necessary</li></dd>
+        <dd><li><b>curl &lt;name-of-the-route&gt;</b></li></dd>
+        <dt><li>Edit the <b>index.html</b> in the <b>simple</b> git cloned directory</li></dt>
+        <dt><li>Use <b>git add, git commit, git push</b> to push changes to GitHub</li></dt>
+        <dt><li>Use <b>oc start-build simple</b> to trigger the build procedure of Pending</li></dt>
+        <dt><li>Monitor, using <b>oc get all</b>. Make sure nothing is in a state of Pending</li></dt>
+        <dt><li><b>curl &lt;name-ofthe-route&gt;</b> to verify changes</li></dt>
+    </ul>
+    <h4>Working with Git Branches</h4>
+    <ul>
+        <li><b>git clone https://github.com/YOURUSERNAME/simpleapp</b></li>
+        <li>cd simpleapp</li>
+        <li>git checkout master # checks to see if anything new</li>
+        <li>create a branch: <b>git checkout -b lab</b></li>
+        <li><b>git push -u orgin lab</b></li>
+        <li>After making changes to the local files</li>
+        <li><b>git add .</b></li>
+        <li><b>git commit -m "changes"</b></li>
+        <li><b>git push origin lab</b></li>
+        <li><b>git checkout master</b></li>
+        <li><b>git merge lab</b></li>
+        <li><b>git branch -d dev-branch</b></li>
+
+    </ul>
+    <h3>Lesson 9 Lab Building Application from Source</h3>
+    <h2>Lesson 10: Troubleshooting OpenShift</h2>
+</body>
+</html>

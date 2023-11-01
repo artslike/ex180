@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenShift Fundamentals</title>
+    <link rel="stylesheet" href="../mystyle.css">
+
+</head>
+<body>
+    <h1>Module 2: OpenShift Fundamentals</h1>
+    <h2>7.2 Exploring the API</h2>
+    <h3>oc credentials</h3>
+    <ul>
+        <li>crc console --credentials</li>
+    </ul>
+    <h3>Kubernetes and OpenShift define the following</h3>
+    <img src="7-2-1-143904.png" alt="OpenShift Resources" height="500">
+    <p></p>
+    <ul>
+        <li>Pods are managed by deployments</li>
+        <li>Deployments use replica sets to take care of scalability.</li>
+        <li>Service exposes an application running on a set of pods as a network service. It provides a network endpoint of IP addresses and Ports that allows other services or external clients to communicate with the pods running the application regardless of which node the pods are running on.</li>
+        <li>ConfigMap decoupling configuration from application code can be mounted as file or environment variables within a container, making it easier to manage and update configurations without the need to rebuild or redeploy applications.</li>
+        <li>The Secret is for securely storing variables and configuration files.</li>
+        <li>Persistent Volume represents storage at a specific site, which can be dynamically created by the storage class.</li>
+        <li>A Persistent Volume claim is what the volume uses to connect to a specific storage type.
+    </ul>
+    <h2>7.3 Deploying an Application in OpenShift</h2>
+    <h3>7.3.1 Linux kernel implements features important for Kubernetes and containers</h3>
+    <img src="7-3-1-200421.png" alt="OpenShift Resources" height="500">
+    <ul>
+        <li>Namespace in Linux kernel provides strict isolation between containers.</li>
+        <li>Kubernetes also uses namespaces for isolation.</li>
+        <li>OpenShift uses projects instead of namespaces.</li>
+        <li>Projects in OpenShift combine namespace with <b>R</b>ole-<b>B</b>ased <b>A</b>ccess <b>C</b>ontrol.</li>
+        <li>Ordinary users can only see their own projects, administrators can see all projects.</li>
+        <li>Projects allow ordinary users to create their own environments.</li>
+        <li>Projects are used for organization and resource restrictions.</li>
+        <li>Quota can be used to limit resource availability in a project.</li>
+        <li>Administrative roles can be applied to specific projects in OpenShift.</li>
+        <li>Projects in OpenShift have more functionality compared to namespaces in Kubernetes.</li>
+    </ul>
+    <h3>Running Applications in OpenShift</h3>
+    <h3>Understanding oc new-app sources</h3>
+    <h3>Understanding Deployment vs. DeploymentConfig</h3>
+    <ul>
+        <li>In older versions of OpenShift, the OpenShift API resource DeploymentConfig was the default resource to run applications.</li>
+        <li>The DeploymentConfig uses a ReplicationController to control Pod replication.</li>
+        <li>In newer versions of OpenShift, the Kubernetes API resource Deployment should be used instead.</li>
+        <li>The Depolyment uses the ReplicaSet resouce to control Pod replication,</li>
+        <li>Use <b>oc new-app</b> with the <b>--as-deployment-config</b> option to run applications specifically as a deployment config.</li>
+        <li>Some resources like templates still are creating DeploymentConfigs instead of Deployments as the default. In case <b>oc get deploy</b> doesn't show your applications use <b>oc get deploymentconfig</b> instead.</li>
+    </ul>
+    <h2>7.4 Displaying Information about Running Applications</h2>
+    <h3>Demo: Displaying Application Information</h3>
+    <ul>
+        <li><b>oc get all</b></li>
+        <li><b>oc get pods</b></li>
+        <li><b>oc get pods -A</b></li>
+        <li><b>oc get pods mypod -o yaml</b></li>
+        <li><b>oc describe pods</b> mypod</li>
+        <li><b>oc logs mypod</b></li>
+    </ul>
+    <h2>7.5 Using Labels</h2>
+    <h3>Demo: Using Labels</h3>
+    <ul>
+        <img src="7-5-222847.png" alt="oc get pods,rs --show-labels" width="1280">
+        <dt><li><b>oc get pods,rs --show-labels</b></li></dt>
+        <dd>showing all the different labels that have been set</dd>
+        <dt><li><b>oc get pods,rs --selector app=nginx</b></li></dt>
+        <dd>use to filter Pods and other applications based on a specific label</dd>
+        <dt><li><b>oc label pod</b> mypod <b>storage=ssd</b></li></dt>
+        <dd>added the label</dd>
+        <img src="7-5-223630.png" alt="oc get pods,rs --show-labels" width="1280">
+    </ul>
+    <h3></h3>
+    <h3></h3>
+    <h2>7.6 Using OpenShift in the Declarative Way</h2>
+    <h3>Understanding Declarative vs. Imperative</h3>
+    <ul>
+        <li>In an imperative way of working, an operator types commands to get things done.</li>
+        <li>In a declarative way of working, the configuration is managed as code.</li>
+        <li>In DevOps environment, it's preferred to work in a declarative way.</li>
+        <li>While using a declarative approach, it's easy to manage versions of configuration code using a version control system.</li>
+        <li>OpenShift resources can be defined in a declarative way using YAML files.</li>
+    </ul>
+    <h3>Creating YAML Files</h3>
+    <ul>
+        <li>The recommended way to create YAML files is by generating them: <b>oc create deploy mynginx --image=bitnami/nginx --dry-run=client -o yaml > myngnix.yaml</b> </li>
+        <img src="7-6-234429.png" alt="myngnix.yaml" width="1280">
+        <li>Alternatively, YAML files can be written from scratch, according to the directions that can be found using <b>oc explain deploy</b>.</li>
+        <img src="7-6-235119.png" alt="oc explain deploy" width="1280">
+        <li>Also, but a bit more work, YAML files can be generated from running resources, using <b>oc get deploy mynginx -o=yaml</b>. You will need to clean up the resulting YAML file though.</li>
+    </ul>
+    <h2>7.7 Using Services to Access Pods</h2>
+    <h3>Understanding Services</h3>
+    <ul>
+        <li>In OpenShift, a Pod SDN is provided for Pod access.</li>
+        <li>Pod IP addresses are volatie.</li>
+        <li>For that reason, Pods are not addressed directly, but services are used instead.</li>
+        <li>Services are exposed on the cluster IP address.</li>
+        <li>The service provides an IP address that can be used to access workloads running in Pods, either from within the cluster, or from outside the cluster if a router is added.</li>
+        <li>Services also provide load balancing when multiple Pods are used in a replicated setup.</li>
+    </ul>
+    <h3>Understanding Pod to Service Connection</h3>
+    <ul>
+        <dt><li>Services are using selector labels to find the Pods they should connect to.</li></dt>
+        <dt><li>The Pods themselves know which services they are connected to by two environment variables that are automatically assigned to running Pods.</li></dt>
+        <dd><li><i>SVC_NAME</i>_SERVICE_HOST is the service IP address</li></dd>
+        <dd><li><i>SVC_NAME</i>_SERVICE_PORT is the service port</li></dd>
+        <dt><li>Services also automatically register with the Kubernetes internal DNS server, which makes them accessible throught DNS as <i>SVC_NAME.PROJECT_NAME</i>.svc.clustername.</li></dt>
+        <dt><li>Clustername can be obtained using <b>oc config get-clusters</b> or <b>oc config current-context</b>.</li></dt>
+    </ul>
+    <h3>Understanding Pod Access Options</h3>
+    <ul>
+        <dt><li>Different types of service can be used.</li></dt>
+        <dd><li>ClusterIP provides an IP address that is only accessible on the ClusterIP. This IP address cannot be addressed directly by external ysers.</li></dd>
+        <dd><li>NodePort provides a node port on the cluster nodes which allows users to connect to ther service directly.</li></dd>
+        <dt><li>In OpenShift, services are not addressed directly. Use routes instead.</li></dt>
+        <dt><li><b>oc port-forward</b> can be used to expose a Pod port on the local workstation where the oc client is used. This is good for administrator/ developer access, but not to expose workloads to external users.</li></dt>
+        <dd><li><b>oc port-forward mynginx 8080:80</b></li></dd>
+    </ul>
+    <h2>7.8 Using Routes to Provide Access to Applications</h2>
+    <h3>Understanding Routes</h3>
+    <ul>
+        <dt></dt>
+        <dt><li>Routes use services to provide access to Pods.</li></dt>
+        <dt><li>To do so, router Rods are deployed on infrastructure nodes.</li></dt>
+        <dt><li>Router Rods bind to the node public IP addresses, from where traffic can be forwarded to services, thus providing access to the Pods.</li></dt>
+        <dt><li>DNS must be configured to enable traffic forwarding to the appropriate public node IP address.</li></dt>
+        <dt><li>In the route spec, two important fields are used.</li></dt>
+        <dd><li>spec.host: the DNS name that is used by the route to expose itself</li></dd>
+        <dd><li>spec.to: the name of the service resource</li></dd>
+        <dt><li>Routes can be configured to handle TLS traffic</li></dt>
+    </ul>
+    <h3>Creating Routes</h3>
+    <ul>
+        <dt><li><b>oc expose service</b> is used to create routes.</li></dt>
+        <dt><li>The <b>oc expose</b> command generates a DNS name that looks like routename.projectname.defaultdomain.</li></dt>
+        <dt><li>The default domain is wildcard DNS domain that is configured while installing OpenShift, and matches the OpenShift DNS name.</li></dt>
+        <dd><li>On CRC, the default domain is set to apps-crc.testing.</li></dd>
+        <dt><li>The external DNS server needs to be configured with a wilcard DNS name that resolves to the load balancer that implements the route.</li></dt>
+    </ul>
+
+    <h2>Lesson 7 Lab Running Application in OpenShift</h2>
+    <ul>
+        <li>Use <b>oc new-app</b> to run the rhscl/mysql-57-rhel7:latest image as a deployment config. This is likely to fail. Analyze what is going wrong, and make sure the application is started the right way.</li>
+    </ul>
+    <h3>Solution</h3>
+    <h4>Login, create new project and add application</h4>
+    <ul>
+        <dt><li>Check role</li></dt>
+        <dd><b>oc whoami</b></dd>
+        <dt><li>Create a new project <b>lab7</b></li></dt>
+        <dd><b>oc new-project lab7</b></dd>
+        <dt><li>Add application to the project</li></dt>
+        <dd><b>oc new-app rhscl/mysql-57-rhel7:latest</b></dd>
+        <dd>container image remote registry lookup failed</dd>
+        <img src="7-lab-164350.png" alt="oc whoami" width="1280">
+    </ul>
+    <h4>Fix incomplete registry name</h4>
+    <ul>
+        <dt><li>Search complete registry name of mysql-57 like images in Podman search</li></dt>
+        <dd><b>podman search mysql-57 | less</b></dd>
+        <img src="7-lab-170224.png" alt="podman search" width="1280">
+        
+    </ul>
+    <ul>
+        <dt>Specify with complete registry name and try again</dt>
+        <dd><b>oc new-app registry.access.redhat.com/rhscl/mysql-57-rhel7</b></dd>
+        <img src="7-lab-170837.png" alt="oc new-app" width="1280">
+    </ul>
+    <h4>Check logs</h4>
+    <ul>
+        <dt>Status check</dt>
+        <dd><b>oc get all</b></dd>
+        <img src="7-lab-171236.png" alt="oc get all" width="1280">
+        <dd>Attention to CrashLoopBackOff</dd>
+        <dt>Check logs of the MySQL pod</dt>
+        <dd><b>oc</b> followed by #</dd>
+        <dt>Complaining about the environment variables</dt>
+        <img src="7-lab-172815.png" alt="oc explain deploy" width="1280">
+        <dt>We can use <b>oc new-app</b> to see if there is any Information about environment variables.</dt>
+        <dd><b>oc new-app -h | less</b></dd>
+        <img src="7-lab-173329.png" alt="oc new-app -h | less" width="1280">
+        <dt>We use oc set to update environment variables on a pod</dt>
+        <img src="7-lab-175704.png" alt="oc set" width="1280">
+    </ul>
+    
+    <h4>Fix lacking environment variables</h4>
+    <ul>
+        <dt>To show how to update environment variables</dt>
+        <dd><b>oc set env -h | less</b></dd>
+        <img src="7-lab-191013.png" alt="oc set env -h" width="1280">
+        <dt>To show name of deployment</dt>
+        <dd><b>oc get deploy</b></dd>
+        <dt>Command to update environment variables</dt>
+        <dd><b>oc set env deploy/mysql-57-rhel7 MYSQL_ROOT_PASSWORD=password</b></dd>
+        <img src="7-lab-192246.png" alt="oc set" width="1280">
+        <dd>If you update critical parameters on running workloads, the workloads are managed by the deployment and the deployment is considering this an update. So it will just create a new pod with the new running parameters. And that's also why this decoupling is so very important as we have just created a new pod. You must make sure that after creating the new pod, it can still access the information that it was accessing before.</dd>
+
+    </ul>
+</body>
+</html>
